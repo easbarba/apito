@@ -1,0 +1,53 @@
+---
+- hosts: ec2
+
+  tasks:
+    - name: Install System Packages
+      become: true
+
+      apt:
+        update_cache: true
+        name:
+          - podman
+          - make
+          - fzf
+          - gawk
+          - net-tools
+        state: present
+
+    - name: Clone main repository
+      git:
+        repo: https://gitlab.com/easbarba/apito-symfony
+        dest: ~/apito
+        version: main
+        force: true
+
+    - name: Copy .env files
+      copy:
+        src: "{{ playbook_dir }}/../envs"
+        dest: ~/apito
+
+    - name: Build repl image
+      command: make build-repl
+      args:
+        chdir: ~/apito
+
+    - name: Install dependencies
+      shell: make -s install
+      args:
+        chdir: ~/apito
+
+    - name: Stop all containers and pod
+      shell: make -s stop
+      args:
+        chdir: ~/apito
+
+    - name: Start base containers
+      shell: make -s base
+      args:
+        chdir: ~/apito
+
+    - name: Start main container
+      shell: make -s start
+      args:
+        chdir: ~/apito

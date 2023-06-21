@@ -1,3 +1,16 @@
+# Apito is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Apito is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Apito. If not, see <https://www.gnu.org/licenses/>.
+
 ---
 - hosts: ec2
 
@@ -17,7 +30,7 @@
 
     - name: Clone main repository
       git:
-        repo: https://gitlab.com/easbarba/apito-symfony
+        repo: https://gitlab.com/easbarba/apito-quarkus
         dest: ~/apito
         version: main
         force: true
@@ -27,27 +40,17 @@
         src: "{{ playbook_dir }}/../envs"
         dest: ~/apito
 
-    - name: Build repl image
-      command: make build-repl
-      args:
-        chdir: ~/apito
-
-    - name: Install dependencies
-      shell: make -s install
-      args:
-        chdir: ~/apito
-
     - name: Stop all containers and pod
-      shell: make -s stop
+      shell: make -si stop
       args:
         chdir: ~/apito
 
     - name: Start base containers
-      shell: make -s base
+      shell: make -si base
       args:
         chdir: ~/apito
 
     - name: Start main container
-      shell: make -s start
+      shell: make -si start
       args:
         chdir: ~/apito

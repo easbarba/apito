@@ -3,4 +3,4 @@
 *.log
 tmp/
 
-/envs
+/envs/.env*
